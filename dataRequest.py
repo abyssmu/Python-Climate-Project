@@ -15,36 +15,19 @@ def buildURL(startdate, enddate, datatype):
 	u = url + '?' + datasetid + '&' + datatype + '&' + stationid + '&' + startdate + '&' + enddate + '&' + limit + '&' + units + '&' + offset
 	return u
 
-def requestMaxTemp(startYear, endYear, fileName):
-	datatypeid = 'datatypeid=TMAX'
+def requestRange(startYear, endYear, datatype, debug = False):
+	tDiff = endYear - startYear	
+	year = startYear
 
-	requestRange(startYear, endYear + 1, datatypeid, fileName)
+	startdate = 'startdate=' + str(year) + '-01-01'
+	enddate = 'enddate=' + str(year) + '-12-31'
 
-def requestMinTemp(startYear, endYear, fileName):
-	datatypeid = 'datatypeid=TMIN'
+	u = buildURL(startdate, enddate, 'datatypeid=' + datatype)
+	if debug:
+		print(u)
 
-	requestRange(startYear, endYear + 1, datatypeid, fileName)
+	df = pd.DataFrame(requests.get(u, headers={'token': token}).json()["results"])
+	if debug:
+		print(u)
 
-def requestSnow(startYear, endYear, fileName):
-	datatypeid = 'datatypeid=SNOW'
-
-	requestRange(startYear, endYear + 1, datatypeid, fileName)
-
-def requestBasics(startYear, endYear, fileName):
-	requestMaxTemp(startYear, endYear, fileName + 'TMAX')
-	requestMinTemp(startYear, endYear, fileName + 'TMIN')
-	requestSnow(startYear, endYear, fileName + 'SNOW')
-
-def requestRange(startYear, endYear, datatype, fileName):
-	tDiff = endYear - startYear
-	df = tDiff*[None]
-
-	for i in range(0, tDiff):
-		year = startYear + i
-
-		startdate = 'startdate=' + str(year) + '-01-01'
-		enddate = 'enddate=' + str(year) + '-12-31'
-
-		u = buildURL(startdate, enddate, datatype)
-
-		df[i] = pd.DataFrame(requests.get(u, headers={'token': token}).json()["results"])
+	return df

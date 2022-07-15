@@ -1,32 +1,25 @@
-import dataRequest
-import getStation
+import createGraph as cg
+import dataRequest as dr
+import getStation as gs
 
-import pandas as pd
 import matplotlib.pyplot as plt
 
-# startDate = 2000
-# endDate = 2019
-
-# dR.requestBasics(startDate, endDate, 'data')
-
 debug = False
+zipcode = '61801'
 
-stations = getStation.getStationsFromZipcode('61801', debug)
+stations = gs.getStationsFromZipcode(zipcode, debug)
 
 if debug:
 	print(stations)
 
-startYear = 2000
-endYear = 2002
+startYear = 1950
+endYear = 1952
 
-# datatype: TMIN, TMAX, or SNOW
-datatype = 'TMIN'
+station = list(stations['id'])[0]
+data = [dr.buildListForDate(startYear, station, debug)]
 
-df = dataRequest.requestRange(startYear, endYear, datatype, debug)
-print(df.columns)
+for i in range(1, endYear - startYear + 1):
+	data.append(dr.buildListForDate(startYear + i, station, debug))
 
-df = df.rename(columns = {'value' : datatype})
-print(df.columns)
-
-df.plot()
-plt.show()
+print(data)
+cg.graphList(data, zipcode, startYear, debug)

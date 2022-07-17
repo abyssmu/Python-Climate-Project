@@ -13,7 +13,7 @@ if debug:
 	print(stations)
 
 startYear = 1950
-endYear = 1952
+endYear = 1960
 
 station = list(stations['id'])[0]
 data = [dr.buildListForDate(startYear, station, debug)]
@@ -21,5 +21,5 @@ data = [dr.buildListForDate(startYear, station, debug)]
 for i in range(1, endYear - startYear + 1):
 	data.append(dr.buildListForDate(startYear + i, station, debug))
 
-print(data)
+# print(data)
 cg.graphList(data, zipcode, startYear, debug)
